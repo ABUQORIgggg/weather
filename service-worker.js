@@ -1,2 +1,32 @@
-if(!self.define){let e,i={};const n=(n,a)=>(n=new URL(n+".js",a).href,i[n]||new Promise((i=>{if("document"in self){const e=document.createElement("script");e.src=n,e.onload=i,document.head.appendChild(e)}else e=n,importScripts(n),i()})).then((()=>{let e=i[n];if(!e)throw new Error(`Module ${n} didn’t register its module`);return e})));self.define=(a,r)=>{const s=e||("document"in self?document.currentScript.src:"")||location.href;if(i[s])return;let c={};const o=e=>n(e,s),f={module:{uri:s},exports:c,require:o};i[s]=Promise.all(a.map((e=>f[e]||o(e)))).then((e=>(r(...e),c)))}}define(["./workbox-d37740a6"],(function(e){"use strict";self.addEventListener("message",(e=>{e.data&&"SKIP_WAITING"===e.data.type&&self.skipWaiting()})),e.precacheAndRoute([{url:"8504201-removebg-preview.png",revision:"2cf5b06d79c9a8eb31929f741de6eea1"},{url:"images/camalac.png",revision:"4b0a0c9d9767a1f4a592297a73af510f"},{url:"images/cloudly-rain.png",revision:"9b0a7e605e27938f1e218c9b8baae764"},{url:"images/cloudly.png",revision:"9ac10c49d57947fbd9aa3cbedae48d2b"},{url:"images/lightning.png",revision:"b7d4385ea966381c8404e96cbbe6ff11"},{url:"images/logo.png",revision:"04d337e23da42de742f89e401038c82c"},{url:"images/night.png",revision:"e94bacfb6286327748973d08431d2bc0"},{url:"images/overcast.png",revision:"88cf5eee145b0e70d78a3fd03472e462"},{url:"images/rain-lighting.png",revision:"680c2b99693ab6d650a8c4981b5f4e11"},{url:"images/rain.png",revision:"ee1cae1b521853a8cca4750789d51a3c"},{url:"images/snow-rain.png",revision:"a44385c45444f611a92b707f607f68dc"},{url:"images/snow.png",revision:"3bae5201fb0c6351bf008f49c03a10d5"},{url:"images/sunny.png",revision:"b131357f1f6380a203fcace743b0c495"},{url:"images/wind.png",revision:"f3908b826722b2595833e9d5b2d3c5bf"},{url:"index.html",revision:"3659e50f2f9537b1dc3765944ca49cb5"},{url:"main.html",revision:"658a6542e4952e497f7a8d5223f576ed"},{url:"main.js",revision:"74fa0121b91dc624a2bb22423772a1ef"},{url:"manifest.json",revision:"a146057a21341ee192888dd9b721ed35"},{url:"style.css",revision:"d2845fe7c8715441d990b0fb09ea9efb"},{url:"tailwind.config.js",revision:"592aec14a77a1747f06ac7f9a6fd7975"},{url:"winterHome.png",revision:"d502ca0a2e97b7ff048c470f91c66785"}],{})}));
-//# sourceMappingURL=service-worker.js.map
+const CACHE_NAME = 'Mars Weather app';
+const urlsToCache = [
+    './index.html',
+    './style.css',
+    './images/logo.png',
+    './images/camalac.png',
+    './images/cloudly-rain.png',
+    './images/cloudly.png',
+    './images/lightning.png',
+    './images/night.png',
+    './images/overcast.png',
+    './images/rain-lighting.png',
+    './images/rain.png',
+    './images/snow-rain.png',
+    './images/sunny.png',
+    './images/snow.png',
+    './8504201-removebg-preview.png',
+    './main.html',
+    './main.js',
+];
+
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+    );
+});
+
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request).then(response => response || fetch(event.request))
+    );
+});
