@@ -5,6 +5,7 @@ let wnd = document.querySelector('#wind span');
 let desc = document.querySelector('#description');
 let wrapper = document.querySelector('.swiper-wrapper');
 let today = document.querySelector('#today');
+console.log(wrapper);
 const API_KEY = "06z87yaos4kclazy07jxupkbgulmnpkqmjv27k3r";
 const API_URL = "https://www.meteosource.com/api/v1/free/";
 let city = "Tashkent";
@@ -15,14 +16,19 @@ let sections = "all";
 let loadingContainer = document.querySelector('#loading-container');
 let resultContainer = document.querySelector('#result-container');
 
-// Function to show loading spinner
-function showLoadingSpinner() {
+// Initialize Swiper
+let swiper;
+
+// Function to show loading spinner or text
+function showLoading() {
     loadingContainer.style.display = 'flex';
+    resultContainer.innerHTML = 'Loading...';
 }
 
-// Function to hide loading spinner
-function hideLoadingSpinner() {
+// Function to hide loading spinner and update result text
+function hideLoadingAndShowData() {
     loadingContainer.style.display = 'none';
+    resultContainer.innerHTML = 'Fetch data';
 }
 
 function updateUI(data) {
@@ -31,23 +37,19 @@ function updateUI(data) {
     resultContainer.innerHTML = JSON.stringify(data, null, 2);
 }
 
-async function fetchData() {
+async function fetchLocation() {
     try {
         const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
         const data = await response.json();
-        fetchWeather(data[0].place_id, data[0].lat, data[0].lon, sections);
+        return { place_id: data[0].place_id, lat: data[0].lat, lon: data[0].lon };
     } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching location data:", error);
+        throw error; // Propagate the error to the caller
     }
 }
 
-// Call the async function
-fetchData();
-
 async function fetchWeather(place_id, lat, lon, sections) {
     try {
-        showLoadingSpinner(); // Show loading spinner before fetching data
-
         let url;
         if (place_id) {
             url = `${API_URL}point?place_id=${place_id}&sections=${sections}&timezone=Asia%2FTashkent&language=en&units=auto&key=${API_KEY}`;
@@ -59,11 +61,23 @@ async function fetchWeather(place_id, lat, lon, sections) {
 
         const response = await fetch(url);
         const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+        throw error; // Propagate the error to the caller
+    }
+}
 
-        let dateis = data.hourly.data[0];
+async function fetchData() {
+    try {
+        showLoading(); // Show loading spinner or text before fetching data
+
+        const locationData = await fetchLocation();
+        const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
+        let dateis = weatherData.hourly.data[0];
         let currentTime = new Date();
 
-        data.hourly.data.map(item => {
+        weatherData.hourly.data.map(item => {
             let slide = document.createElement('div');
             let time = document.createElement('p');
             let gettime = item.date.slice(11, 16);
@@ -71,31 +85,106 @@ async function fetchWeather(place_id, lat, lon, sections) {
             let img = document.createElement('img');
             let temp = document.createElement('p');
 
-            if (item.weather === "overcast" || item.weather === "cloudy" || item.weather === 'partly_clear') {
-                img.setAttribute('data-src', './images/cloudly.png') || img.setAttribute('data-src', './images/overcast.png');
-            }
-            // Add other conditions for different weather types...
+            if (item.weather === "overcast" || item.weather === "cloudy" || item.weather === 'partly_clear') { img.setAttribute('src', './images/cloudly.png') || img.setAttribute('src', './images/overcast.png'); }
+            if (item.weather === "mostly_clear" && currentTime.getHours() == local) { img.setAttribute('src', './images/night.png'); }
+            if (item.weather === "sun" || item.weather === "partly_sunny") { img.setAttribute('src', './images/sunny.png'); }
+            if (item.weather === "fog") { img.setAttribute('src', './images/wind.png'); }
+            if (item.weather === "light_rain") { img.setAttribute('src', './images/rain-lighting.png'); }
+            if (item.weather === "rain") { img.setAttribute('src', './images/rain.png'); }
+            if (item.weather === "mostly_cloudy") { img.setAttribute('src', './images/overcast.png'); }
 
             img.classList.add('max-w-[80px]');
             time.innerHTML = gettime;
             temp.innerHTML = item.temperature + "°";
 
+            function WaitMonth() {
+                let t = item.date.slice(5, 7);
+                if (t == "12") {
+                    return "December";
+                } else if (t == "11") {
+                    return "November";
+                } else if (t == "10") {
+                    return "October";
+                } else if (t == "9") {
+                    return "September";
+                } else if (t == "8") {
+                    return "August";
+                } else if (t == "7") {
+                    return "July";
+                } else if (t == "6") {
+                    return "Juny";
+                } else if (t == "5") {
+                    return "May";
+                } else if (t == "4") {
+                    return "April";
+                } else if (t == "3") {
+                    return "March";
+                } else if (t == "2") {
+                    return "February";
+                } else {
+                    return "January";
+                }
+            }
+
+            function WaitingDay() {
+                let t = dateis.date.slice(8, 10);
+
+                if (t.includes("T")) {
+                    return t = t.slice(0, t.indexOf("T"));
+                }
+
+                return t;
+            }
+
+            today.innerHTML = WaitMonth() + ", " + WaitingDay();
+
+            slide.classList.add('swiper-slide', 'w-full', 'flex', 'flex-col', 'items-center', 'py-5');
             slide.append(time, img, temp);
             wrapper.append(slide);
         });
 
-        desc.innerHTML = data.current.summary;
-        degree.innerHTML = data.current.temperature + "°";
-        wnd.innerHTML = data.current.wind.speed + ' speed';
+        desc.innerHTML = weatherData.current.summary;
+        degree.innerHTML = weatherData.current.temperature + "°";
+        wnd.innerHTML = weatherData.current.wind.speed + ' speed';
 
         // Lazy loading for Swiper images
         swiper.lazy.load();
         swiper.update();
 
-        updateUI(data);
+        updateUI(weatherData);
     } catch (error) {
-        console.error("Error fetching weather data:", error);
+        console.error("Error fetching data:", error);
     } finally {
-        hideLoadingSpinner(); // Hide loading spinner after fetching data
+        hideLoadingAndShowData(); // Hide loading spinner or text after fetching data
     }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Swiper after DOM content is loaded
+    swiper = new Swiper('.swiper', {
+        // Optional parameters
+        direction: 'horizontal',
+        slidesPerView: 5,
+        loop: false,
+
+        // If we need pagination
+        pagination: {
+            el: '.swiper-pagination',
+        },
+
+        // Navigation arrows
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
+
+        // And if we need scrollbar
+        scrollbar: {
+            el: '.swiper-scrollbar',
+        },
+    });
+
+    // Call the async function
+    fetchData();
+});
+
