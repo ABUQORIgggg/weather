@@ -10,28 +10,23 @@
   <script src="./tailwind.config.js" type="module"></script>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="shortcut icon" href="./8504201-removebg-preview.png" type="image/x-icon">
+  <link rel="manifest" href="/manifest.json">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js.map')
-        .then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(error => {
-          console.error('Service Worker registration failed:', error);
-        });
+    if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+        .catch(error => console.error('Service Worker registration failed:', error));
     }
   </script>
-   <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/service-worker.js')
-        .then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope);
-        })
-        .catch(error => {
-          console.error('Service Worker registration failed:', error);
-        });
-    }
-  </script>
+
 </head>
 
 <body class="h-screen flex justify-center text-white text-center" style="background-color: #2C3E50;">
@@ -52,25 +47,32 @@
 
   <script src="/main.js"></script>
 
+  <button onclick="installPWA()" class="fixed bottom-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg">Install
+    PWA</button>
+  <script src="./script.js"></script>
   <script>
-    window.addEventListener('beforeinstallprompt', (event) => {
-      // Prevent Chrome 76 and later from showing the mini-infobar
-      event.preventDefault();
-      // Stash the event so it can be triggered later.
-      deferredPrompt = event;
-      // Update UI to notify the user they can install the PWA
-      showInstallPromotion();
-    });
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the A2HS prompt');
-      } else {
-        console.log('User dismissed the A2HS prompt');
-      }
-      deferredPrompt = null;
-    });
+    function installPWA() {
+      const installPrompt = window.deferredPrompt;
 
+      if (installPrompt) {
+        installPrompt.prompt();
+
+        installPrompt.userChoice.then(choiceResult => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+
+          window.deferredPrompt = null;
+        });
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', event => {
+      event.preventDefault();
+      window.deferredPrompt = event;
+    });
   </script>
 </body>
 
