@@ -138,7 +138,7 @@ async function fetchData() {
 
             today.innerHTML = WaitMonth() + ", " + WaitingDay();
 
-            slide.classList.add('swiper-slide', 'w-full', 'flex', 'flex-col', 'items-center', 'py-5');
+            slide.classList.add('swiper-slide', 'w-full', 'flex', 'flex-col', 'items-center', 'py-1');
             slide.append(time, img, temp);
             wrapper.append(slide);
         });
