@@ -7,12 +7,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <title>Document</title>
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js" type="module"></script>
     <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="style.css">
+
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/service-worker.js')
@@ -28,13 +29,11 @@
 
 <body
     class="h-screen max-w-[90%] mx-auto text-white text-center bg-gradient-to-tr from-blue-700 via-blue-800 to-gray-900">
-    <!-- Add a loading container with an animated spinner -->
     <div id="loading-container">
         <div class="loading-spinner"></div>
     </div>
-    <!-- Rest of your HTML structure -->
 
-    <main class="w-full lg:max-w-[50%] mx-auto">
+    <main class="w-full lg:max-w-[50%] mx-auto " id="result-container">
         <section class="flex flex-col items-center w-full">
             <img src="./8504201-removebg-preview.png" class="max-w-[200px]" alt="">
             <div class="container mx-auto max-w-[90%]">
@@ -64,8 +63,7 @@
 
                 <div class="swiper">
                     <!-- Additional required wrapper -->
-                    <div class="swiper-wrapper">
-                    </div>
+                    <div class="swiper-wrapper"></div>
                     <div class="swiper-button-prev"></div>
                     <div class="swiper-button-next"></div>
                     <div class="swiper-scrollbar"></div>
@@ -102,6 +100,9 @@
             },
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
 </body>
 
 </html>
