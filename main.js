@@ -22,13 +22,13 @@ let swiper;
 // Function to show loading spinner or text
 function showLoading() {
     loadingContainer.style.display = 'flex';
-    resultContainer.innerHTML = 'Loading...';
+    resultContainer.style.display = "none";
 }
 
 // Function to hide loading spinner and update result text
 function hideLoadingAndShowData() {
     loadingContainer.style.display = 'none';
-    resultContainer.innerHTML = 'Fetch data';
+    resultContainer.style.display = 'block';
 }
 
 function updateUI(data) {
