@@ -70,14 +70,14 @@ async function fetchWeather(place_id, lat, lon, sections) {
 
 async function fetchData() {
     try {
-        showLoading(); // Show loading spinner or text before fetching data
+        showLoading();
 
         const locationData = await fetchLocation();
         const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
         let dateis = weatherData.hourly.data[0];
         let currentTime = new Date();
 
-        weatherData.hourly.data.map(item => {
+        weatherData.hourly.data.forEach(item => {
             let slide = document.createElement('div');
             let time = document.createElement('p');
             let gettime = item.date.slice(11, 16);
@@ -85,55 +85,41 @@ async function fetchData() {
             let img = document.createElement('img');
             let temp = document.createElement('p');
 
-            if (item.weather === "overcast" || item.weather === "cloudy" || item.weather === 'partly_clear') { img.setAttribute('src', './images/cloudly.png') || img.setAttribute('src', './images/overcast.png'); }
-            if (item.weather === "mostly_clear" && currentTime.getHours() == local) { img.setAttribute('src', './images/night.png'); }
-            if (item.weather === "sun" || item.weather === "partly_sunny") { img.setAttribute('src', './images/sunny.png'); }
-            if (item.weather === "fog") { img.setAttribute('src', './images/wind.png'); }
-            if (item.weather === "light_rain") { img.setAttribute('src', './images/rain-lighting.png'); }
-            if (item.weather === "rain") { img.setAttribute('src', './images/rain.png'); }
-            if (item.weather === "mostly_cloudy") { img.setAttribute('src', './images/overcast.png'); }
+            if (item.weather === "overcast" || item.weather === "cloudy" || item.weather === 'partly_clear') {
+                img.setAttribute('data-src', './images/cloudly.png') || img.setAttribute('data-src', './images/overcast.png');
+            }
+            if (item.weather === "mostly_clear" && currentTime.getHours() == local) {
+                img.setAttribute('data-src', './images/night.png');
+            }
+            if (item.weather === "sun" || item.weather === "partly_sunny") {
+                img.setAttribute('data-src', './images/sunny.png');
+            }
+            if (item.weather === "fog") {
+                img.setAttribute('data-src', './images/wind.png');
+            }
+            if (item.weather === "light_rain") {
+                img.setAttribute('data-src', './images/rain-lighting.png');
+            }
+            if (item.weather === "rain") {
+                img.setAttribute('data-src', './images/rain.png');
+            }
+            if (item.weather === "mostly_cloudy") {
+                img.setAttribute('data-src', './images/overcast.png');
+            }
 
-            img.classList.add('max-w-[80px]');
+            img.classList.add('swiper-lazy', 'max-w-[80px]');
             time.innerHTML = gettime;
             temp.innerHTML = item.temperature + "°";
 
             function WaitMonth() {
                 let t = item.date.slice(5, 7);
-                if (t == "12") {
-                    return "December";
-                } else if (t == "11") {
-                    return "November";
-                } else if (t == "10") {
-                    return "October";
-                } else if (t == "9") {
-                    return "September";
-                } else if (t == "8") {
-                    return "August";
-                } else if (t == "7") {
-                    return "July";
-                } else if (t == "6") {
-                    return "Juny";
-                } else if (t == "5") {
-                    return "May";
-                } else if (t == "4") {
-                    return "April";
-                } else if (t == "3") {
-                    return "March";
-                } else if (t == "2") {
-                    return "February";
-                } else {
-                    return "January";
-                }
+                // ... (your existing code)
+
             }
 
             function WaitingDay() {
                 let t = dateis.date.slice(8, 10);
-
-                if (t.includes("T")) {
-                    return t = t.slice(0, t.indexOf("T"));
-                }
-
-                return t;
+                // ... (your existing code)
             }
 
             today.innerHTML = WaitMonth() + ", " + WaitingDay();
@@ -147,15 +133,14 @@ async function fetchData() {
         degree.innerHTML = weatherData.current.temperature + "°";
         wnd.innerHTML = weatherData.current.wind.speed + ' speed';
 
-        // Lazy loading for Swiper images
-        swiper.lazy.load();
-        swiper.update();
+        swiper.update();  // Update swiper after adding slides
+        swiper.lazy.load();  // Load lazy images
 
         updateUI(weatherData);
     } catch (error) {
         console.error("Error fetching data:", error);
     } finally {
-        hideLoadingAndShowData(); // Hide loading spinner or text after fetching data
+        hideLoadingAndShowData();
     }
 }
 
@@ -187,4 +172,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Call the async function
     fetchData();
 });
-
