@@ -11,20 +11,25 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js" type="module"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="shortcut icon" href="./8504201-removebg-preview.png" type="image/x-icon">
     <link rel="manifest" href="/manifest.json">
-    <link rel="stylesheet" href="style.css">
-
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
     <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/service-worker.js')
-                .then(registration => {
-                    console.log('Service Worker registered with scope:', registration.scope);
-                })
-                .catch(error => {
-                    console.error('Service Worker registration failed:', error);
-                });
+        if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => console.log('Service Worker registered with scope:', registration.scope))
+                .catch(error => console.error('Service Worker registration failed:', error));
         }
     </script>
+
 </head>
 
 <body
@@ -72,8 +77,35 @@
 
         </section>
     </main>
-
     <script src="/main.js"></script>
+
+    <button onclick="installPWA()" class="fixed bottom-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg">Install
+        PWA</button>
+    <script src="./script.js"></script>
+    <script>
+        function installPWA() {
+            const installPrompt = window.deferredPrompt;
+
+            if (installPrompt) {
+                installPrompt.prompt();
+
+                installPrompt.userChoice.then(choiceResult => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    } else {
+                        console.log('User dismissed the install prompt');
+                    }
+
+                    window.deferredPrompt = null;
+                });
+            }
+        }
+
+        window.addEventListener('beforeinstallprompt', event => {
+            event.preventDefault();
+            window.deferredPrompt = event;
+        });
+    </script>
     <script type="module">
         document.addEventListener('DOMContentLoaded', () => {
             // Initialize Swiper after DOM content is loaded
