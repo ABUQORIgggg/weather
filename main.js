@@ -191,14 +191,10 @@ document.addEventListener('DOMContentLoaded', () => {
         breakpoints: {
             // When window width is >= 320px
             290: {
-                slidesPerView: 4,
+                slidesPerView: 3,
                 spaceBetween: 10,
             },
-            // When window width is >= 480px
-            480: {
-                slidesPerView: 4,
-                spaceBetween: 20,
-            },
+            
             // When window width is >= 640px
             968: {
                 slidesPerView: 7,
