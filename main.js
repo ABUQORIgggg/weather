@@ -28,7 +28,7 @@ function showLoading() {
 // Function to hide loading spinner and update result text
 function hideLoadingAndShowData() {
     loadingContainer.style.display = 'none';
-    resultContainer.style.display = 'block';
+    resultContainer.style.display = "block";
 }
 
 function updateUI(data) {
@@ -41,6 +41,7 @@ async function fetchLocation() {
     try {
         const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
         const data = await response.json();
+        console.log(data)
         return { place_id: data[0].place_id, lat: data[0].lat, lon: data[0].lon };
     } catch (error) {
         console.error("Error fetching location data:", error);
@@ -113,12 +114,39 @@ async function fetchData() {
 
             function WaitMonth() {
                 let t = item.date.slice(5, 7);
-                // ... (your existing code)
+                function WaitMonth(monthNumber) {
+                    const months = [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    ];
 
+                    return months[monthNumber - 1];
+                }
+
+                // Example usage:
+                let monthNumber = 1; // Replace this with the actual month number you want to convert
+                let monthName = WaitMonth(monthNumber);
+                console.log(monthName); // Output: "January"
+
+                return monthName
+
+
+                // ... (your existing code)
             }
 
             function WaitingDay() {
                 let t = dateis.date.slice(8, 10);
+                return t
                 // ... (your existing code)
             }
 
@@ -143,14 +171,29 @@ async function fetchData() {
         hideLoadingAndShowData();
     }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Swiper after DOM content is loaded
-    swiper = new Swiper('.swiper', {
+    const swiper = new Swiper('.swiper', {
         // Optional parameters
         direction: 'horizontal',
-        slidesPerView: 5,
         loop: false,
+
+        // Responsive breakpoints
+        breakpoints: {
+            // when window width is >= 320px
+            320: {
+                slidesPerView: 3,
+            },
+            // when window width is >= 480px
+            480: {
+                slidesPerView: 4,
+            },
+            // when window width is >= 640px
+            640: {
+                slidesPerView: 5,
+            },
+            // ... add more breakpoints as needed
+        },
 
         // If we need pagination
         pagination: {
@@ -171,4 +214,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Call the async function
     fetchData();
-});
+})

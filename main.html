@@ -10,7 +10,7 @@
         Mars Weather App
     </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="./tailwind.config.js" type="module"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -79,11 +79,10 @@
 
         </section>
     </main>
-    <script src="/main.js"></script>
 
     <button onclick="installPWA()" class="fixed bottom-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg">Install
         PWA</button>
-    <script src="./script.js"></script>
+
     <script>
         function installPWA() {
             const installPrompt = window.deferredPrompt;
@@ -108,53 +107,9 @@
             window.deferredPrompt = event;
         });
     </script>
-    <script type="module">
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize Swiper after DOM content is loaded
-            const swiper = new Swiper('.swiper', {
-                // Optional parameters
-                direction: 'horizontal',
-                loop: false,
+    <script src="./script.js" async></script>
 
-                // Responsive breakpoints
-                breakpoints: {
-                    // when window width is >= 320px
-                    320: {
-                        slidesPerView: 3,
-                    },
-                    // when window width is >= 480px
-                    480: {
-                        slidesPerView: 4,
-                    },
-                    // when window width is >= 640px
-                    640: {
-                        slidesPerView: 5,
-                    },
-                    // ... add more breakpoints as needed
-                },
 
-                // If we need pagination
-                pagination: {
-                    el: '.swiper-pagination',
-                },
-
-                // Navigation arrows
-                navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-
-                // And if we need scrollbar
-                scrollbar: {
-                    el: '.swiper-scrollbar',
-                },
-            });
-
-            // Call the async function
-            fetchData();
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
 </body>
