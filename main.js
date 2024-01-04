@@ -162,6 +162,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
+            
         }
     }
 
@@ -191,16 +192,16 @@ document.addEventListener('DOMContentLoaded', () => {
         breakpoints: {
             // When window width is >= 320px
             320: {
-                slidesPerView: 1,
+                slidesPerView: 4,
                 spaceBetween: 10,
             },
             // When window width is >= 480px
             480: {
-                slidesPerView: 2,
+                slidesPerView: 4,
                 spaceBetween: 20,
             },
             // When window width is >= 640px
-            640: {
+            968: {
                 slidesPerView: 3,
                 spaceBetween: 30,
             },
