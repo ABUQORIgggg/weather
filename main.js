@@ -65,8 +65,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let local = item.date.slice(11, 13);
             let img = document.createElement('img');
 
-            let temp = document.createElement('p');
-            console.log(item.weather)
 
             img.src = getWeatherImage(item.weather);
 
@@ -97,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 let monthNumber = t;
                 let monthName = WaitMonth(monthNumber);
-                console.log(monthName); // Output: "January"
 
                 return monthName;
             }
@@ -124,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
             const data = await response.json();
-            console.log(data);
             return { place_id: data[0].place_id, lat: data[0].lat, lon: data[0].lon };
         } catch (error) {
             console.error("Error fetching location data:", error);
@@ -162,7 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            
+
         }
     }
 
@@ -202,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             // When window width is >= 640px
             968: {
-                slidesPerView: 3,
+                slidesPerView: 7,
                 spaceBetween: 30,
             },
         },
