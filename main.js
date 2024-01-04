@@ -1,169 +1,169 @@
-document.addEventListener('DOMContentLoaded', async () => {
-    const degree = document.querySelector('#degree');
-    const wnd = document.querySelector('#wind span');
-    const desc = document.querySelector('#description');
-    const wrapper = document.querySelector('.swiper-wrapper');
-    const today = document.querySelector('#today');
-    const API_KEY = "06z87yaos4kclazy07jxupkbgulmnpkqmjv27k3r";
-    const API_URL = "https://www.meteosource.com/api/v1/free/";
-    const city = "Tashkent";
-    const language = "en";
-    const sections = "all";
+const degree = document.querySelector('#degree');
+const wnd = document.querySelector('#wind span');
+const desc = document.querySelector('#description');
+const wrapper = document.querySelector('.swiper-wrapper');
+const today = document.querySelector('#today');
+const API_KEY = "06z87yaos4kclazy07jxupkbgulmnpkqmjv27k3r";
+const API_URL = "https://www.meteosource.com/api/v1/free/";
+const city = "Tashkent";
+const language = "en";
+const sections = "all";
 
-    // Add a loading indicator and result container to your HTML
-    const loadingContainer = document.querySelector('#loading-container');
-    const resultContainer = document.querySelector('#result-container');
+// Add a loading indicator and result container to your HTML
+const loadingContainer = document.querySelector('#loading-container');
+const resultContainer = document.querySelector('#result-container');
 
-    // Initialize Swiper
-    let swiper;
+// Initialize Swiper
+let swiper;
 
-    // Function to show loading spinner or text
-    function showLoading() {
-        loadingContainer.style.display = 'flex';
-        resultContainer.style.display = "none";
+// Function to show loading spinner or text
+function showLoading() {
+    loadingContainer.style.display = 'flex';
+    resultContainer.style.display = "none";
+}
+
+// Function to hide loading spinner and update result text
+function hideLoadingAndShowData() {
+    loadingContainer.style.display = 'none';
+    resultContainer.style.display = "block";
+}
+
+function getWeatherImage(weather) {
+    // Add your logic to determine the image source based on the weather condition
+    // Example logic:
+    if (weather === "overcast" || weather === "cloudy" || weather === 'partly_clear') {
+        return './images/cloudly.png';
+    } else if (weather === "mostly_clear") {
+        return './images/night.png';
+    } else if (weather === "sun" || weather === "partly_sunny") {
+        return './images/sunny.png';
+    } else if (weather === "fog") {
+        return './images/wind.png';
+    } else if (weather === "light_rain") {
+        return './images/rain-lighting.png';
+    } else if (weather === "rain") {
+        return './images/rain.png';
+    } else if (weather === "mostly_cloudy") {
+        return './images/overcast.png';
+    } else {
+        // Default image if no match is found
+        return './images/camalac.png';
     }
+}
 
-    // Function to hide loading spinner and update result text
-    function hideLoadingAndShowData() {
-        loadingContainer.style.display = 'none';
-        resultContainer.style.display = "block";
-    }
+async function updateUI(data) {
+    const locationData = await fetchLocation();
+    const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
+    let dateis = weatherData.hourly.data[0];
+    let currentTime = new Date();
 
-    function getWeatherImage(weather) {
-        // Add your logic to determine the image source based on the weather condition
-        // Example logic:
-        if (weather === "overcast" || weather === "cloudy" || weather === 'partly_clear') {
-            return './images/cloudly.png';
-        } else if (weather === "mostly_clear") {
-            return './images/night.png';
-        } else if (weather === "sun" || weather === "partly_sunny") {
-            return './images/sunny.png';
-        } else if (weather === "fog") {
-            return './images/wind.png';
-        } else if (weather === "light_rain") {
-            return './images/rain-lighting.png';
-        } else if (weather === "rain") {
-            return './images/rain.png';
-        } else if (weather === "mostly_cloudy") {
-            return './images/overcast.png';
-        } else {
-            // Default image if no match is found
-            return './images/camalac.png';
+    weatherData.hourly.data.forEach(item => {
+        let slide = document.createElement('div');
+        let time = document.createElement('p');
+        let gettime = item.date.slice(11, 16);
+        let local = item.date.slice(11, 13);
+        let img = document.createElement('img');
+        let temp = document.createElement('p');
+
+        img.src = getWeatherImage(item.weather);
+        img.classList.add('max-w-[80px]');
+        time.innerHTML = gettime;
+        temp.innerHTML = item.temperature + "°";
+
+        function WaitMonth() {
+            let t = item.date.slice(5, 7);
+            function WaitMonth(monthNumber) {
+                const months = [
+                    "January",
+                    "February",
+                    "March",
+                    "April",
+                    "May",
+                    "June",
+                    "July",
+                    "August",
+                    "September",
+                    "October",
+                    "November",
+                    "December"
+                ];
+
+                return months[monthNumber - 1];
+            }
+
+            let monthNumber = t;
+            let monthName = WaitMonth(monthNumber);
+            console.log(monthName); // Output: "January"
+
+            return monthName;
         }
-    }
 
-    async function updateUI(data) {
+        function WaitingDay() {
+            let t = dateis.date.slice(8, 10);
+            return t;
+        }
+
+        today.innerHTML = WaitMonth() + ", " + WaitingDay();
+
+        slide.classList.add('swiper-slide', 'flex', 'flex-col', 'items-center', 'py-1', 'gap-2');
+        slide.append(time, img, temp);
+        wrapper.append(slide);
+    });
+
+    desc.innerHTML = weatherData.current.summary;
+    degree.innerHTML = weatherData.current.temperature + "°";
+    wnd.innerHTML = weatherData.current.wind.speed + ' speed';
+}
+
+async function fetchLocation() {
+    try {
+        const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
+        const data = await response.json();
+        console.log(data);
+        return { place_id: data[0].place_id, lat: data[0].lat, lon: data[0].lon };
+    } catch (error) {
+        console.error("Error fetching location data:", error);
+        throw error; // Propagate the error to the caller
+    }
+}
+
+async function fetchWeather(place_id, lat, lon, sections) {
+    try {
+        let url;
+        if (place_id) {
+            url = `${API_URL}point?place_id=${place_id}&sections=${sections}&timezone=Asia%2FTashkent&language=en&units=auto&key=${API_KEY}`;
+        } else if (lat && lon) {
+            url = `${API_URL}point?lat=${lat}&lon=${lon}&sections=${sections}&timezone=Asia%2FTashkent&language=en&units=auto&key=${API_KEY}`;
+        } else {
+            throw new Error("Either place_id or lat+lon must be specified.");
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error fetching weather data:", error);
+        throw error; // Propagate the error to the caller
+    }
+}
+
+async function fetchData() {
+    try {
         const locationData = await fetchLocation();
         const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
-        let dateis = weatherData.hourly.data[0];
-        let currentTime = new Date();
 
-        weatherData.hourly.data.forEach(item => {
-            let slide = document.createElement('div');
-            let time = document.createElement('p');
-            let gettime = item.date.slice(11, 16);
-            let local = item.date.slice(11, 13);
-            let img = document.createElement('img');
-            let temp = document.createElement('p');
+        // Update swiper after adding slides
+        swiper.update();
 
-            img.src = getWeatherImage(item.weather);
-            img.classList.add('max-w-[80px]');
-            time.innerHTML = gettime;
-            temp.innerHTML = item.temperature + "°";
-
-            function WaitMonth() {
-                let t = item.date.slice(5, 7);
-                function WaitMonth(monthNumber) {
-                    const months = [
-                        "January",
-                        "February",
-                        "March",
-                        "April",
-                        "May",
-                        "June",
-                        "July",
-                        "August",
-                        "September",
-                        "October",
-                        "November",
-                        "December"
-                    ];
-
-                    return months[monthNumber - 1];
-                }
-
-                let monthNumber = t;
-                let monthName = WaitMonth(monthNumber);
-                console.log(monthName); // Output: "January"
-
-                return monthName;
-            }
-
-            function WaitingDay() {
-                let t = dateis.date.slice(8, 10);
-                return t;
-            }
-
-            today.innerHTML = WaitMonth() + ", " + WaitingDay();
-
-            slide.classList.add('swiper-slide', 'flex', 'flex-col', 'items-center', 'py-1', 'gap-2');
-            slide.append(time, img, temp);
-            wrapper.append(slide);
-        });
-
-        desc.innerHTML = weatherData.current.summary;
-        degree.innerHTML = weatherData.current.temperature + "°";
-        wnd.innerHTML = weatherData.current.wind.speed + ' speed';
+        updateUI(weatherData);
+        hideLoadingAndShowData();
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    } finally {
+        // Any final cleanup or additional actions
     }
-
-    async function fetchLocation() {
-        try {
-            const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
-            const data = await response.json();
-            console.log(data);
-            return { place_id: data[0].place_id, lat: data[0].lat, lon: data[0].lon };
-        } catch (error) {
-            console.error("Error fetching location data:", error);
-            throw error; // Propagate the error to the caller
-        }
-    }
-
-    async function fetchWeather(place_id, lat, lon, sections) {
-        try {
-            let url;
-            if (place_id) {
-                url = `${API_URL}point?place_id=${place_id}&sections=${sections}&timezone=Asia%2FTashkent&language=en&units=auto&key=${API_KEY}`;
-            } else if (lat && lon) {
-                url = `${API_URL}point?lat=${lat}&lon=${lon}&sections=${sections}&timezone=Asia%2FTashkent&language=en&units=auto&key=${API_KEY}`;
-            } else {
-                throw new Error("Either place_id or lat+lon must be specified.");
-            }
-
-            const response = await fetch(url);
-            const data = await response.json();
-            return data;
-        } catch (error) {
-            console.error("Error fetching weather data:", error);
-            throw error; // Propagate the error to the caller
-        }
-    }
-
-    async function fetchData() {
-        try {
-            const locationData = await fetchLocation();
-            const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
-
-            // Update swiper after adding slides
-            swiper.update();
-
-            updateUI(weatherData);
-            hideLoadingAndShowData();
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            // Any final cleanup or additional actions
-        }
-    }
+}
+document.addEventListener('DOMContentLoaded', async () => {
 
     // Initialize Swiper after DOM content is loaded
     swiper = new Swiper('.swiper', {
