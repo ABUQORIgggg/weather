@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
     let degree = document.querySelector('#degree');
-    let lon = document.querySelector('lon');
-    let lat = document.querySelector('lat');
     let wnd = document.querySelector('#wind span');
     let desc = document.querySelector('#description');
     let wrapper = document.querySelector('.swiper-wrapper');
