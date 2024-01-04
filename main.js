@@ -194,7 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Call the async function
-    fetchData();
+    fetchData().then(() => {
+        swiper.update();
+    });
 });
 
 function installPWA() {
