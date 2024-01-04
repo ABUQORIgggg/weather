@@ -29,38 +29,96 @@ document.addEventListener('DOMContentLoaded', () => {
         resultContainer.style.display = "block";
     }
 
-    function updateUI(data) {
-        // Update current weather
-        desc.innerHTML = data.current.summary;
-        degree.innerHTML = data.current.temperature + "°";
-        wnd.innerHTML = data.current.wind.speed + ' m/s'; // Adjust the units if needed
-    
-        // Update today's date
-        let currentDate = new Date();
-        today.innerHTML = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-    
-        // Update hourly forecast
-        wrapper.innerHTML = ''; // Clear previous forecast
-        data.hourly.data.forEach(item => {
+    function getWeatherImage(weather) {
+        // Add your logic to determine the image source based on the weather condition
+        // Example logic:
+        if (weather === "overcast" || weather === "cloudy" || weather === 'partly_clear') {
+            return './images/cloudly.png';
+        } else if (weather === "mostly_clear") {
+            return './images/night.png';
+        } else if (weather === "sun" || weather === "partly_sunny") {
+            return './images/sunny.png';
+        } else if (weather === "fog") {
+            return './images/wind.png';
+        } else if (weather === "light_rain") {
+            return './images/rain-lighting.png';
+        } else if (weather === "rain") {
+            return './images/rain.png';
+        } else if (weather === "mostly_cloudy") {
+            return './images/overcast.png';
+        } else {
+            // Default image if no match is found
+            return './images/camalac.png';
+        }
+    }
+
+    async function updateUI(data) {
+        const locationData = await fetchLocation();
+        const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
+        let dateis = weatherData.hourly.data[0];
+        let currentTime = new Date();
+
+        weatherData.hourly.data.forEach(item => {
             let slide = document.createElement('div');
             let time = document.createElement('p');
+            let gettime = item.date.slice(11, 16);
+            let local = item.date.slice(11, 13);
             let img = document.createElement('img');
+
             let temp = document.createElement('p');
-    
-            // Adjust image source based on weather condition
-            // (Replace with your own logic and image URLs)
-            img.setAttribute('src', getWeatherImage(item.weather));
+            console.log(item.weather)
+
+            img.src = getWeatherImage(item.weather);
+
             img.classList.add('max-w-[80px]');
-    
-            time.innerHTML = new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            time.innerHTML = gettime;
             temp.innerHTML = item.temperature + "°";
-    
-            slide.classList.add('swiper-slide', 'flex', 'flex-col', 'items-center', 'py-1');
+
+            function WaitMonth() {
+                let t = item.date.slice(5, 7);
+                function WaitMonth(monthNumber) {
+                    const months = [
+                        "January",
+                        "February",
+                        "March",
+                        "April",
+                        "May",
+                        "June",
+                        "July",
+                        "August",
+                        "September",
+                        "October",
+                        "November",
+                        "December"
+                    ];
+
+                    return months[monthNumber - 1];
+                }
+
+                let monthNumber = t;
+                let monthName = WaitMonth(monthNumber);
+                console.log(monthName); // Output: "January"
+
+                return monthName;
+            }
+
+            function WaitingDay() {
+                let t = dateis.date.slice(8, 10);
+                return t;
+            }
+
+            today.innerHTML = WaitMonth() + ", " + WaitingDay();
+
+            slide.classList.add('swiper-slide', 'flex', 'flex-col', 'items-center', 'py-1', 'gap-2');
             slide.append(time, img, temp);
             wrapper.append(slide);
         });
-    
-   
+
+        desc.innerHTML = weatherData.current.summary;
+        degree.innerHTML = weatherData.current.temperature + "°";
+        wnd.innerHTML = weatherData.current.wind.speed + ' speed';
+
+
     }
     async function fetchLocation() {
         try {
@@ -93,101 +151,17 @@ document.addEventListener('DOMContentLoaded', () => {
             throw error; // Propagate the error to the caller
         }
     }
-
     async function fetchData() {
         try {
-            showLoading();
-
             const locationData = await fetchLocation();
             const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
-            let dateis = weatherData.hourly.data[0];
-            let currentTime = new Date();
-
-            weatherData.hourly.data.forEach(item => {
-                let slide = document.createElement('div');
-                let time = document.createElement('p');
-                let gettime = item.date.slice(11, 16);
-                let local = item.date.slice(11, 13);
-                let img = document.createElement('img');
-                let temp = document.createElement('p');
-
-                if (item.weather === "overcast" || item.weather === "cloudy" || item.weather === 'partly_clear') {
-                    img.setAttribute('src', './images/cloudly.png') || img.setAttribute('src', './images/overcast.png');
-                }
-                if (item.weather === "mostly_clear" && currentTime.getHours() == local) {
-                    img.setAttribute('src', './images/night.png');
-                }
-                if (item.weather === "sun" || item.weather === "partly_sunny") {
-                    img.setAttribute('src', './images/sunny.png');
-                }
-                if (item.weather === "fog") {
-                    img.setAttribute('src', './images/wind.png');
-                }
-                if (item.weather === "light_rain") {
-                    img.setAttribute('src', './images/rain-lighting.png');
-                }
-                if (item.weather === "rain") {
-                    img.setAttribute('src', './images/rain.png');
-                }
-                if (item.weather === "mostly_cloudy") {
-                    img.setAttribute('src', './images/overcast.png');
-                }
-
-                img.classList.add('max-w-[80px]');
-                time.innerHTML = gettime;
-                temp.innerHTML = item.temperature + "°";
-
-                function WaitMonth() {
-                    let t = item.date.slice(5, 7);
-                    function WaitMonth(monthNumber) {
-                        const months = [
-                            "January",
-                            "February",
-                            "March",
-                            "April",
-                            "May",
-                            "June",
-                            "July",
-                            "August",
-                            "September",
-                            "October",
-                            "November",
-                            "December"
-                        ];
-
-                        return months[monthNumber - 1];
-                    }
-
-                    let monthNumber = t;
-                    let monthName = WaitMonth(monthNumber);
-                    console.log(monthName); // Output: "January"
-
-                    return monthName;
-                }
-
-                function WaitingDay() {
-                    let t = dateis.date.slice(8, 10);
-                    return t;
-                }
-
-                today.innerHTML = WaitMonth() + ", " + WaitingDay();
-
-                slide.classList.add('swiper-slide', 'flex', 'flex-col', 'items-center', 'py-1');
-                slide.append(time, img, temp);
-                wrapper.append(slide);
-            });
-
-            desc.innerHTML = weatherData.current.summary;
-            degree.innerHTML = weatherData.current.temperature + "°";
-            wnd.innerHTML = weatherData.current.wind.speed + ' speed';
 
             swiper.update();  // Update swiper after adding slides
             updateUI(weatherData);
-            hideLoadingAndShowData()
+            hideLoadingAndShowData();
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-            hideLoadingAndShowData();
         }
     }
 
@@ -196,26 +170,43 @@ document.addEventListener('DOMContentLoaded', () => {
         // Optional parameters
         direction: 'horizontal',
         loop: false,
-
-        // Responsive breakpoints
-
+    
         // If we need pagination
         pagination: {
             el: '.swiper-pagination',
         },
-
+    
         // Navigation arrows
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
         },
-
+    
         // And if we need scrollbar
         scrollbar: {
             el: '.swiper-scrollbar',
         },
+    
+        // Responsive breakpoints
+        breakpoints: {
+            // When window width is >= 320px
+            320: {
+                slidesPerView: 1,
+                spaceBetween: 10,
+            },
+            // When window width is >= 480px
+            480: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+            },
+            // When window width is >= 640px
+            640: {
+                slidesPerView: 3,
+                spaceBetween: 30,
+            },
+        },
     });
-
+    
     // Call the async function
     fetchData();
 });

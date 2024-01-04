@@ -3,9 +3,7 @@
     padding: 30px;
 }
 
-.swiper-slide {
-    max-width: 230px;
-}
+
 
 /* Add CSS styles for the loading container and spinner */
 #loading-container {
