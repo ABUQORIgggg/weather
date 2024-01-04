@@ -1,18 +1,18 @@
-document.addEventListener('DOMContentLoaded', () => {
-    let degree = document.querySelector('#degree');
-    let wnd = document.querySelector('#wind span');
-    let desc = document.querySelector('#description');
-    let wrapper = document.querySelector('.swiper-wrapper');
-    let today = document.querySelector('#today');
+document.addEventListener('DOMContentLoaded', async () => {
+    const degree = document.querySelector('#degree');
+    const wnd = document.querySelector('#wind span');
+    const desc = document.querySelector('#description');
+    const wrapper = document.querySelector('.swiper-wrapper');
+    const today = document.querySelector('#today');
     const API_KEY = "06z87yaos4kclazy07jxupkbgulmnpkqmjv27k3r";
     const API_URL = "https://www.meteosource.com/api/v1/free/";
-    let city = "Tashkent";
-    let language = "en";
-    let sections = "all";
+    const city = "Tashkent";
+    const language = "en";
+    const sections = "all";
 
     // Add a loading indicator and result container to your HTML
-    let loadingContainer = document.querySelector('#loading-container');
-    let resultContainer = document.querySelector('#result-container');
+    const loadingContainer = document.querySelector('#loading-container');
+    const resultContainer = document.querySelector('#result-container');
 
     // Initialize Swiper
     let swiper;
@@ -64,11 +64,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let gettime = item.date.slice(11, 16);
             let local = item.date.slice(11, 13);
             let img = document.createElement('img');
-
             let temp = document.createElement('p');
 
             img.src = getWeatherImage(item.weather);
-
             img.classList.add('max-w-[80px]');
             time.innerHTML = gettime;
             temp.innerHTML = item.temperature + "°";
@@ -116,9 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
         desc.innerHTML = weatherData.current.summary;
         degree.innerHTML = weatherData.current.temperature + "°";
         wnd.innerHTML = weatherData.current.wind.speed + ' speed';
-
-
     }
+
     async function fetchLocation() {
         try {
             const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
@@ -150,63 +147,75 @@ document.addEventListener('DOMContentLoaded', () => {
             throw error; // Propagate the error to the caller
         }
     }
+
     async function fetchData() {
         try {
             const locationData = await fetchLocation();
             const weatherData = await fetchWeather(locationData.place_id, locationData.lat, locationData.lon, sections);
 
-            swiper.update();  // Update swiper after adding slides
+            // Update swiper after adding slides
+            swiper.update();
+
             updateUI(weatherData);
             hideLoadingAndShowData();
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
-
+            // Any final cleanup or additional actions
         }
     }
 
     // Initialize Swiper after DOM content is loaded
     swiper = new Swiper('.swiper', {
-        // Optional parameters
         direction: 'horizontal',
         loop: false,
         slidesPerView: 4,
         spaceBetween: 10,
-    
-        // If we need pagination
         pagination: {
             el: '.swiper-pagination',
         },
-    
-        // Navigation arrows
         navigation: {
             nextEl: '.swiper-button-next',
             prevEl: '.swiper-button-prev',
         },
-    
-        // And if we need scrollbar
         scrollbar: {
             el: '.swiper-scrollbar',
         },
-    
-        // Responsive breakpoints
         breakpoints: {
-            // When window width is >= 320px
             290: {
                 slidesPerView: 3,
                 spaceBetween: 10,
             },
-            
-            // When window width is >= 640px
             968: {
                 slidesPerView: 7,
                 spaceBetween: 30,
             },
         },
     });
-    
+
     // Call the async function
-    fetchData();
+    await fetchData();
 });
 
+function installPWA() {
+    const installPrompt = window.deferredPrompt;
 
+    if (installPrompt) {
+        installPrompt.prompt();
+
+        installPrompt.userChoice.then(choiceResult => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+
+            window.deferredPrompt = null;
+        });
+    }
+}
+
+window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    window.deferredPrompt = event;
+});

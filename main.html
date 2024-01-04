@@ -82,33 +82,8 @@
         </section>
     </main>
 
-    <button onclick="installPWA()" class="fixed bottom-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg">Install
-        PWA</button>
+    <button onclick="installPWA()" class="fixed bottom-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg">Install app</button>
 
-    <script>
-        function installPWA() {
-            const installPrompt = window.deferredPrompt;
-
-            if (installPrompt) {
-                installPrompt.prompt();
-
-                installPrompt.userChoice.then(choiceResult => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    } else {
-                        console.log('User dismissed the install prompt');
-                    }
-
-                    window.deferredPrompt = null;
-                });
-            }
-        }
-
-        window.addEventListener('beforeinstallprompt', event => {
-            event.preventDefault();
-            window.deferredPrompt = event;
-        });
-    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="./main.js" async></script>
