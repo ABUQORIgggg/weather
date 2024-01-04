@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Responsive breakpoints
         breakpoints: {
             // When window width is >= 320px
-            320: {
+            290: {
                 slidesPerView: 4,
                 spaceBetween: 10,
             },
