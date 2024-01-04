@@ -172,21 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loop: false,
 
             // Responsive breakpoints
-            breakpoints: {
-                // when window width is >= 320px
-                320: {
-                    slidesPerView: 3,
-                },
-                // when window width is >= 480px
-                480: {
-                    slidesPerView: 4,
-                },
-                // when window width is >= 640px
-                640: {
-                    slidesPerView: 5,
-                },
-                // ... add more breakpoints as needed
-            },
+           
 
             // If we need pagination
             pagination: {
