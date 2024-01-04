@@ -30,11 +30,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateUI(data) {
-        // Update your UI with the fetched data
-        // For example, you can append data to resultContainer
-        resultContainer.innerHTML = JSON.stringify(data, null, 2);
+        // Update current weather
+        desc.innerHTML = data.current.summary;
+        degree.innerHTML = data.current.temperature + "°";
+        wnd.innerHTML = data.current.wind.speed + ' m/s'; // Adjust the units if needed
+    
+        // Update today's date
+        let currentDate = new Date();
+        today.innerHTML = currentDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    
+        // Update hourly forecast
+        wrapper.innerHTML = ''; // Clear previous forecast
+        data.hourly.data.forEach(item => {
+            let slide = document.createElement('div');
+            let time = document.createElement('p');
+            let img = document.createElement('img');
+            let temp = document.createElement('p');
+    
+            // Adjust image source based on weather condition
+            // (Replace with your own logic and image URLs)
+            img.setAttribute('src', getWeatherImage(item.weather));
+            img.classList.add('max-w-[80px]');
+    
+            time.innerHTML = new Date(item.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            temp.innerHTML = item.temperature + "°";
+    
+            slide.classList.add('swiper-slide', 'flex', 'flex-col', 'items-center', 'py-1');
+            slide.append(time, img, temp);
+            wrapper.append(slide);
+        });
+    
+   
     }
-
     async function fetchLocation() {
         try {
             const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
@@ -131,8 +158,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         return months[monthNumber - 1];
                     }
 
-                    // Example usage:
-                    let monthNumber = 1; // Replace this with the actual month number you want to convert
+                    let monthNumber = t;
                     let monthName = WaitMonth(monthNumber);
                     console.log(monthName); // Output: "January"
 
@@ -157,6 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             swiper.update();  // Update swiper after adding slides
             updateUI(weatherData);
+            hideLoadingAndShowData()
         } catch (error) {
             console.error("Error fetching data:", error);
         } finally {
@@ -164,35 +191,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        // Initialize Swiper after DOM content is loaded
-        const swiper = new Swiper('.swiper', {
-            // Optional parameters
-            direction: 'horizontal',
-            loop: false,
+    // Initialize Swiper after DOM content is loaded
+    swiper = new Swiper('.swiper', {
+        // Optional parameters
+        direction: 'horizontal',
+        loop: false,
 
-            // Responsive breakpoints
+        // Responsive breakpoints
 
-            // If we need pagination
-            pagination: {
-                el: '.swiper-pagination',
-            },
+        // If we need pagination
+        pagination: {
+            el: '.swiper-pagination',
+        },
 
-            // Navigation arrows
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
+        // Navigation arrows
+        navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+        },
 
-            // And if we need scrollbar
-            scrollbar: {
-                el: '.swiper-scrollbar',
-            },
-        });
+        // And if we need scrollbar
+        scrollbar: {
+            el: '.swiper-scrollbar',
+        },
+    });
 
-        swiper.init()
+    // Call the async function
+    fetchData();
+});
 
-        // Call the async function
-        fetchData();
-    })
-})
+
