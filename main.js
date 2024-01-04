@@ -5,7 +5,6 @@ let wnd = document.querySelector('#wind span');
 let desc = document.querySelector('#description');
 let wrapper = document.querySelector('.swiper-wrapper');
 let today = document.querySelector('#today');
-console.log(wrapper);
 const API_KEY = "06z87yaos4kclazy07jxupkbgulmnpkqmjv27k3r";
 const API_URL = "https://www.meteosource.com/api/v1/free/";
 let city = "Tashkent";
@@ -41,7 +40,7 @@ async function fetchLocation() {
     try {
         const response = await fetch(`${API_URL}find_places?text=${city}&language=${language}&key=${API_KEY}`);
         const data = await response.json();
-        console.log(data)
+        console.log(data);
         return { place_id: data[0].place_id, lat: data[0].lat, lon: data[0].lon };
     } catch (error) {
         console.error("Error fetching location data:", error);
@@ -87,28 +86,28 @@ async function fetchData() {
             let temp = document.createElement('p');
 
             if (item.weather === "overcast" || item.weather === "cloudy" || item.weather === 'partly_clear') {
-                img.setAttribute('data-src', './images/cloudly.png') || img.setAttribute('data-src', './images/overcast.png');
+                img.setAttribute('src', './images/cloudly.png') || img.setAttribute('src', './images/overcast.png');
             }
             if (item.weather === "mostly_clear" && currentTime.getHours() == local) {
-                img.setAttribute('data-src', './images/night.png');
+                img.setAttribute('src', './images/night.png');
             }
             if (item.weather === "sun" || item.weather === "partly_sunny") {
-                img.setAttribute('data-src', './images/sunny.png');
+                img.setAttribute('src', './images/sunny.png');
             }
             if (item.weather === "fog") {
-                img.setAttribute('data-src', './images/wind.png');
+                img.setAttribute('src', './images/wind.png');
             }
             if (item.weather === "light_rain") {
-                img.setAttribute('data-src', './images/rain-lighting.png');
+                img.setAttribute('src', './images/rain-lighting.png');
             }
             if (item.weather === "rain") {
-                img.setAttribute('data-src', './images/rain.png');
+                img.setAttribute('src', './images/rain.png');
             }
             if (item.weather === "mostly_cloudy") {
-                img.setAttribute('data-src', './images/overcast.png');
+                img.setAttribute('src', './images/overcast.png');
             }
 
-            img.classList.add('swiper-lazy', 'max-w-[80px]');
+            img.classList.add('max-w-[80px]');
             time.innerHTML = gettime;
             temp.innerHTML = item.temperature + "°";
 
@@ -138,16 +137,12 @@ async function fetchData() {
                 let monthName = WaitMonth(monthNumber);
                 console.log(monthName); // Output: "January"
 
-                return monthName
-
-
-                // ... (your existing code)
+                return monthName;
             }
 
             function WaitingDay() {
                 let t = dateis.date.slice(8, 10);
-                return t
-                // ... (your existing code)
+                return t;
             }
 
             today.innerHTML = WaitMonth() + ", " + WaitingDay();
@@ -162,8 +157,6 @@ async function fetchData() {
         wnd.innerHTML = weatherData.current.wind.speed + ' speed';
 
         swiper.update();  // Update swiper after adding slides
-        swiper.lazy.load();  // Load lazy images
-
         updateUI(weatherData);
     } catch (error) {
         console.error("Error fetching data:", error);
@@ -171,6 +164,7 @@ async function fetchData() {
         hideLoadingAndShowData();
     }
 }
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize Swiper after DOM content is loaded
     const swiper = new Swiper('.swiper', {
