@@ -172,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
             loop: false,
 
             // Responsive breakpoints
-           
 
             // If we need pagination
             pagination: {
